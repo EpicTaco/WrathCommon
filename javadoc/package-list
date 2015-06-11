@@ -1,0 +1,8 @@
+org.lwjgl.util.vector
+wrath.common
+wrath.common.entities
+wrath.common.entities.events
+wrath.common.javaloader
+wrath.common.scheduler
+wrath.common.scripts
+wrath.common.world
