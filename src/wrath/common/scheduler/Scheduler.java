@@ -26,19 +26,22 @@ import java.util.HashMap;
  */
 public class Scheduler
 {
-    private final ArrayList<SchedulerEventHandler> handlerList = new ArrayList<>();
-    private final HashMap<Long, TaskList> map = new HashMap<>();
-    private final RootSchedulerEventHandler rootHandler = new RootSchedulerEventHandler();
-    private long ticks = 0;
+    private static final ArrayList<SchedulerEventHandler> handlerList = new ArrayList<>();
     
     /**
      * Adds a {@link wrath.common.scheduler.SchedulerEventHandler} to the list of handlers that responds to events.
      * @param handler The {@link wrath.common.scheduler.SchedulerEventHandler} to add to the handlers list.
      */
-    public void addSchedulerEventHandler(SchedulerEventHandler handler)
+    public static void addSchedulerEventHandler(SchedulerEventHandler handler)
     {
         handlerList.add(handler);
     }
+    
+    // Object
+    
+    private final HashMap<Long, TaskList> map = new HashMap<>();
+    private final RootSchedulerEventHandler rootHandler = new RootSchedulerEventHandler();
+    private long ticks = 0;
     
     /**
      * Gets the current tick count of the scheduler.
@@ -88,14 +91,7 @@ public class Scheduler
      */
     public void runTaskNextTick(Task task)
     {
-        if(map.containsKey(ticks + 1)) map.get(ticks + 1).addTask(task);
-        else
-        {
-            TaskList l = new TaskList();
-            l.addTask(task);
-            map.put(ticks + 1, l);
-        }
-        rootHandler.onTaskSchedule(this, task, ticks + 1);
+        runTaskLater(task, ticks + 1);
     }
     
     /**
@@ -166,9 +162,10 @@ public class Scheduler
         }
     }
     
+    // Event handler
+    
     private class RootSchedulerEventHandler implements SchedulerEventHandler
     {
-
         @Override
         public void onTaskRun(Scheduler scheduler, Task task)
         {
@@ -186,6 +183,5 @@ public class Scheduler
                 h.onTaskSchedule(scheduler, task, tick);
             });
         }
-        
     }
 }

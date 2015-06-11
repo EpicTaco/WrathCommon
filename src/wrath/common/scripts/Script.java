@@ -68,9 +68,9 @@ public class Script
      */
     public void execute(boolean dedicatedThread)
     {
-        if(!compiled) return;
+        if(compiled) compile();
         
-        man.getScriptLogger().log("Executing script '" + getScriptName() + "'!");
+        ScriptManager.getScriptLogger().log("Executing script '" + getScriptName() + "'!");
         man.executeObject(compiledObject, dedicatedThread);
         man.getScriptEventHandler().onScriptCompile(man, this);
     }

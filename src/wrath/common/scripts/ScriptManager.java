@@ -64,6 +64,7 @@ public abstract class ScriptManager
         return SCRIPT_LOGGER;
     }
     
+    // Object
     
     protected final String fileExtension;
     protected final Object parentObject;
@@ -105,25 +106,24 @@ public abstract class ScriptManager
      * @param script The {@link wrath.common.scripts.Script} to compile.
      * @return Returns the compiled {@link java.lang.Object}.
      */
-    public Object compileScript(Script script){return null;}
-    
+    public abstract Object compileScript(Script script);
     /**
      * Called to close and deallocate all resources associated with this Script Manager.
      */
-    public void close(){}
+    public abstract void close();
     
     /**
      * Executes specified code in the scripting language's interactive console.
      * @param code The code to execute in console.
      */
-    public void executeCode(String[] code){}
+    public abstract void executeCode(String[] code);
     
     /**
      * Executes an executable object into the language's interpreter.
      * @param compiledObject The compiled {@link java.lang.Object} of a previously-compiled {@link wrath.common.scripts.Script}.
      * @param dedicatedThread If true, a new {@link java.lang.Thread} is made to execute the script.
      */
-    protected void executeObject(Object compiledObject, boolean dedicatedThread){}
+    protected abstract void executeObject(Object compiledObject, boolean dedicatedThread);
     
     /**
      * Loads a {@link wrath.common.scripts.Script} into an object.
@@ -177,7 +177,7 @@ public abstract class ScriptManager
         return rootHandler;
     }
     
-    
+    // Event handler
     
     private class RootScriptEventHandler implements ScriptEventHandler
     {
