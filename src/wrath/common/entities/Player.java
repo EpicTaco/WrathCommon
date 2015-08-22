@@ -40,12 +40,12 @@ public class Player extends Entity
     
     public Player()
     {
-        this(null, null);
+        this(null, null, null);
     }
     
-    public Player(Vector3f worldLocation, World world)
+    public Player(Vector3f worldLocation, World world, EntityDescriptor descriptor)
     {
-        super(worldLocation, world);
+        super(worldLocation, world, descriptor);
         if(roothandler == null) roothandler = new RootPlayerEventHandler();
     }
     

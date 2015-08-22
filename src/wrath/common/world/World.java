@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import wrath.common.entities.Entity;
 import wrath.util.Logger;
 
 /**
@@ -36,6 +37,7 @@ import wrath.util.Logger;
 public class World implements Serializable
 {
     private static transient final ArrayList<WorldEventHandler> handlerList = new ArrayList<>();
+    private static RootWorldEventHandler roothandler;
     
     /**
      * Adds a {@link wrath.common.world.WorldEventHandler} to handle events that occur in any World.
@@ -45,13 +47,27 @@ public class World implements Serializable
     public static void addWorldEventHandler(WorldEventHandler handler)
     {
         handlerList.add(handler);
+        
     }
     
+    /**
+     * Gets the root instance of {@link wrath.common.world.WorldEventHandler} to report events to.
+     * @return Returns the root instance of {@link wrath.common.world.WorldEventHandler} to report events to.
+     */
+    public static WorldEventHandler getWorldEventHandler()
+    {
+        return roothandler;
+    }
+    
+    // Object
+    
     private File file;
-    private transient final RootWorldEventHandler rootHandler = new RootWorldEventHandler();
+    private final ArrayList<Entity> entities = new ArrayList<>();
     
     private World(File worldFile)
     {
+        if(roothandler == null) roothandler = new RootWorldEventHandler();
+        
         this.file = worldFile;
         if(!file.exists())
         {
@@ -71,15 +87,6 @@ public class World implements Serializable
     private void generateWorld()
     {
         
-    }
-    
-    /**
-     * Gets the root instance of {@link wrath.common.world.WorldEventHandler} to report events to.
-     * @return Returns the root instance of {@link wrath.common.world.WorldEventHandler} to report events to.
-     */
-    public WorldEventHandler getWorldEventHandler()
-    {
-        return rootHandler;
     }
     
     /**
@@ -166,13 +173,12 @@ public class World implements Serializable
         {
             Logger.getErrorLogger().log("Could not close World streams! I/O Error!");
         }
-        
         return ret;
     }
     
+    // Root handler
     
-    
-    private class RootWorldEventHandler implements WorldEventHandler
+    private class RootWorldEventHandler implements WorldEventHandler, Serializable
     {
         
     }

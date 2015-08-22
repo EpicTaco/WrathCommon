@@ -17,6 +17,7 @@
  */
 package wrath.common.entities;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import org.lwjgl.util.vector.Vector3f;
 import wrath.common.entities.events.EntityEventHandler;
@@ -26,10 +27,10 @@ import wrath.common.world.World;
  * Class to represent anything that holds a location in the world.
  * @author Trent Spears
  */
-public abstract class Entity
+public abstract class Entity implements Serializable
 {
-    private static final ArrayList<EntityEventHandler> entHandlers = new ArrayList<>();
-    private static RootEntityEventHandler roothandler = null;
+    private transient static final ArrayList<EntityEventHandler> entHandlers = new ArrayList<>();
+    private transient static RootEntityEventHandler roothandler = null;
     
     public static void addEntityEventHandler(EntityEventHandler handler)
     {
@@ -38,35 +39,47 @@ public abstract class Entity
     
     // Object
     
-    private final CollisionBox collision;
+    private boolean hasChanged = true;
+    
+    private EntityDescriptor desc = null;
     private Vector3f location;
-    private Vector3f orientation;
-    private float speed;
-    private World world;
+    private Vector3f orientation = new Vector3f(0f, 0f, 0f);
+    private float sizeScale = 1f;
+    private float speed = 0;
+    private transient World world;
     
     /**
      * Constructor.
      * @param location The {@link org.lwjgl.util.vector.Vector3f} representation of the entity's 3D coordinates.
      * @param world The {@link wrath.common.world.World} the entity belongs to.
+     * @param descriptor The {@link wrath.common.entities.EntityDescriptor} that describes the Entity to renderers. Can be null.
      */
-    protected Entity(Vector3f location, World world)
+    protected Entity(Vector3f location, World world, EntityDescriptor descriptor)
     {
-        this.collision = new CollisionBox(this, 0f, 0f, 0f);
         this.location = location;
-        this.orientation = new Vector3f(0f,0f,0f);
-        this.speed = 0f;
         this.world = world;
+        this.desc = descriptor;
+        if(desc != null) sizeScale = desc.getDefaultScale();
         
         if(roothandler == null) roothandler = new RootEntityEventHandler();
     }
     
     /**
-     * Gets the {@link wrath.common.entities.CollisionBox} belonging to this entity.
-     * @return Returns the {@link wrath.common.entities.CollisionBox} belonging to this entity.
+     * For internal Engine use.
+     * @return For internal use!
      */
-    public CollisionBox getCollisionBox()
+    public boolean changed()
     {
-        return collision;
+        return hasChanged;
+    }
+    
+    /**
+     * Gets the {@link wrath.common.entities.EntityDescriptor} linked to this Entity. Can be null.
+     * @return Returns the {@link wrath.common.entities.EntityDescriptor} linked to this Entity. Can be null.
+     */
+    public EntityDescriptor getEntityDescriptor()
+    {
+        return desc;
     }
     
     /**
@@ -88,6 +101,15 @@ public abstract class Entity
     }
     
     /**
+     * Gets the multiplier of this entity's size compared to the default model.
+     * @return Returns the multiplier of this entity's size compared to the default model.
+     */
+    public float getSizeScale()
+    {
+        return sizeScale;
+    }
+    
+    /**
      * Gets the entity's current movement speed.
      * @return Returns the entity's current movement speed.
      */
@@ -106,11 +128,30 @@ public abstract class Entity
     }
     
     /**
+     * Do not call! For internal use only!
+     */
+    public void resetChangeTracker()
+    {
+        hasChanged = false;
+    }
+    
+    /**
+     * Sets the Entity's {@link wrath.common.entities.EntityDescriptor}. Can be null.
+     * @param descriptor The Entity's {@link wrath.common.entities.EntityDescriptor}. Can be null.
+     */
+    public void setEntityDescriptor(EntityDescriptor descriptor)
+    {
+        desc = descriptor;
+        setSizeScale(desc.getDefaultScale());
+    }
+    
+    /**
      * Sets the entity's 3D location in the world.
      * @param newLocation The {@link org.lwjgl.util.vector.Vector3f} representation of the entity's 3D coordinates.
      */
     public void setLocation(Vector3f newLocation)
     {
+        hasChanged = true;
         this.location = newLocation;
     }
     
@@ -122,6 +163,7 @@ public abstract class Entity
      */
     public void setLocation(float x, float y, float z)
     {
+        hasChanged = true;
         location.set(x, y, z);
     }
     
@@ -131,6 +173,7 @@ public abstract class Entity
      */
     public void setOrientation(Vector3f newOrientation)
     {
+        hasChanged = true;
         this.orientation = newOrientation;
     }
     
@@ -142,7 +185,18 @@ public abstract class Entity
      */
     public void setOrientation(float pitch, float yaw, float roll)
     {
+        hasChanged = true;
         orientation.set(pitch, yaw, roll);
+    }
+    
+    /**
+     * Sets the multiplier of this entity's size compared to the default model.
+     * @param scale The multiplier of this entity's size compared to the default model.
+     */
+    public void setSizeScale(float scale)
+    {
+        hasChanged = true;
+        this.sizeScale = scale;
     }
     
     /**
@@ -170,8 +224,9 @@ public abstract class Entity
      * @param dy The amount to increase the position on the Y-Axis.
      * @param dz The amount to increase the position on the Z-Axis.
      */
-    public void transformLocation(float dx, float dy, float dz)
+    public void translateLocation(float dx, float dy, float dz)
     {
+        hasChanged = true;
         this.location.x += dx;
         this.location.y += dy;
         this.location.z += dz;
@@ -183,8 +238,9 @@ public abstract class Entity
      * @param dy The amount to increase the yaw.
      * @param dr The amount to increase the roll.
      */
-    public void transformOrientation(float dx, float dy, float dr)
+    public void translateOrientation(float dx, float dy, float dr)
     {
+        hasChanged = true;
         this.orientation.x += dx;
         this.orientation.y += dy;
         this.orientation.z += dr;

@@ -31,6 +31,8 @@ public abstract class ScriptManager
     public static final Logger SCRIPT_LOGGER = new Logger("scripts");
     public static final Config SCRIPT_CONFIG = new Config("scriping");
     private static final ArrayList<ScriptManager> mgrList = new ArrayList<>();
+    private static final ArrayList<ScriptEventHandler> handlers = new ArrayList<>();
+    private static RootScriptEventHandler rootHandler;
     
     /**
      * Closes all resources associated with scripting.
@@ -47,12 +49,30 @@ public abstract class ScriptManager
     }
     
     /**
+     * Adds a {@link wrath.common.scripts.ScriptEventHandler} to the list of handlers to respond to events.
+     * @param handler The {@link wrath.common.scripts.ScriptEventHandler} to add to the listeners list.
+     */
+    public static void addScriptEventHandler(ScriptEventHandler handler)
+    {
+        handlers.add(handler);
+    }
+    
+    /**
      * Gets the {@link wrath.util.Config} associated with all Script Managers.
      * @return Returns the {@link wrath.util.Config} associated with all Script Managers.
      */
     public static Config getScriptConfig()
     {
         return SCRIPT_CONFIG;
+    }
+    
+    /**
+     * Gets the root {@link wrath.common.scripts.ScriptEventHandler} to report events occurring.
+     * @return Returns the root {@link wrath.common.scripts.ScriptEventHandler} to report events occurring.
+     */
+    public static ScriptEventHandler getScriptEventHandler()
+    {
+        return rootHandler;
     }
     
     /**
@@ -68,8 +88,6 @@ public abstract class ScriptManager
     
     protected final String fileExtension;
     protected final Object parentObject;
-    private final RootScriptEventHandler rootHandler;
-    private final ArrayList<ScriptEventHandler> handlers = new ArrayList<>();
     
      /**
      * Constructor.
@@ -80,18 +98,10 @@ public abstract class ScriptManager
     {
         this.fileExtension = fileExtension;
         this.parentObject = parentObject;
-        this.rootHandler = new RootScriptEventHandler();
+        
+        if(rootHandler == null) rootHandler = new RootScriptEventHandler();
         
         autoLoadScripts();
-    }
-    
-    /**
-     * Adds a {@link wrath.common.scripts.ScriptEventHandler} to the list of handlers to respond to events.
-     * @param handler The {@link wrath.common.scripts.ScriptEventHandler} to add to the listeners list.
-     */
-    public void addScriptEventHandler(ScriptEventHandler handler)
-    {
-        handlers.add(handler);
     }
     
     private void autoLoadScripts()
@@ -107,6 +117,7 @@ public abstract class ScriptManager
      * @return Returns the compiled {@link java.lang.Object}.
      */
     public abstract Object compileScript(Script script);
+    
     /**
      * Called to close and deallocate all resources associated with this Script Manager.
      */
@@ -135,7 +146,7 @@ public abstract class ScriptManager
     public Script loadScript(File scriptFile, boolean autoCompile, boolean autoExecute)
     {
         Script ret = new Script(this, scriptFile);
-        this.getScriptEventHandler().onScriptLoad(this, ret);
+        getScriptEventHandler().onScriptLoad(this, ret);
         if(autoCompile) ret.compile();
         if(autoExecute) ret.execute(false);
         return ret;
@@ -168,14 +179,6 @@ public abstract class ScriptManager
         return ret;
     }
     
-    /**
-     * Gets the root {@link wrath.common.scripts.ScriptEventHandler} to report events occuring.
-     * @return Returns the root {@link wrath.common.scripts.ScriptEventHandler} to report events occuring.
-     */
-    public ScriptEventHandler getScriptEventHandler()
-    {
-        return rootHandler;
-    }
     
     // Event handler
     
@@ -204,7 +207,7 @@ public abstract class ScriptManager
         {
             handlers.stream().forEach((han) -> 
             {
-                han.onScriptExecute(scriptManager, script);
+                han.onScriptLoad(scriptManager, script);
             });
         }
     }

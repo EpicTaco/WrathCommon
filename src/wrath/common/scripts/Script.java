@@ -18,12 +18,13 @@
 package wrath.common.scripts;
 
 import java.io.File;
+import wrath.common.Reloadable;
 
 /**
  * The object that describes a script.
  * @author Trent Spears
  */
-public class Script
+public class Script implements Reloadable
 {
     private boolean compiled = false;
     private Object compiledObject = null;
@@ -72,7 +73,7 @@ public class Script
         
         ScriptManager.getScriptLogger().log("Executing script '" + getScriptName() + "'!");
         man.executeObject(compiledObject, dedicatedThread);
-        man.getScriptEventHandler().onScriptCompile(man, this);
+        man.getScriptEventHandler().onScriptExecute(man, this);
     }
     
     /**
@@ -105,7 +106,8 @@ public class Script
     /**
      * Deletes previously obtained objects and data and re-reads from the script file.
      */
-    public void reloadScript()
+    @Override
+    public void reload()
     {
         compiled = false;
         compile();
