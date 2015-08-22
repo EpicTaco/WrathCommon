@@ -21,13 +21,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import wrath.util.Logger;
 
 /**
  * Class to read Entity Data from the 'assets/entities' directory.
  * @author Trent Spears
  */
-public class EntityDescriptor 
+public class EntityDescriptor implements Serializable
 {
     private final String modelName;
     private final String textureName;

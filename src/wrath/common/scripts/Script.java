@@ -44,7 +44,7 @@ public class Script implements Reloadable
     
     /**
      * Compiles code from the script file.
-     * This can only be done once. To re-read and re-compile the Script, use {@link wrath.common.scripts.Script#reloadScript()}
+     * This can only be done once. To re-read and re-compile the Script, use {@link #reload()}
      */
     public void compile()
     {
