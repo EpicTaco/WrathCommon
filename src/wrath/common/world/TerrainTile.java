@@ -36,7 +36,7 @@ public class TerrainTile implements Serializable
     /**
      * Creates a Tile in specified world.
      * @param location The {@link org.lwjgl.util.vector.Vector3f} representation of this Tile's location in the World.
-     * @param world The {@link wrath.common.worlds.World} this Tile belongs to. Can be null.
+     * @param world The {@link wrath.common.world.World} this Tile belongs to. Can be null.
      * @param vertexCount The number of verticies present in this Tile.
      */
     public TerrainTile(Vector3f location, World world, int vertexCount)
@@ -90,9 +90,9 @@ public class TerrainTile implements Serializable
     }
     
     /**
-     * Gets the {@link wrath.common.worlds.World} linked to this Tile. 
+     * Gets the {@link wrath.common.world.World} linked to this Tile. 
      * Can be null.
-     * @return Returns the {@link wrath.common.worlds.World} linked to this Tile.
+     * @return Returns the {@link wrath.common.world.World} linked to this Tile.
      */
     public World getWorld()
     {
