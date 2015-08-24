@@ -37,7 +37,7 @@ import wrath.util.Logger;
 public class World implements Serializable
 {
     private static transient final ArrayList<WorldEventHandler> handlerList = new ArrayList<>();
-    private static RootWorldEventHandler roothandler;
+    private static transient RootWorldEventHandler roothandler;
     
     /**
      * Adds a {@link wrath.common.world.WorldEventHandler} to handle events that occur in any World.
@@ -47,7 +47,6 @@ public class World implements Serializable
     public static void addWorldEventHandler(WorldEventHandler handler)
     {
         handlerList.add(handler);
-        
     }
     
     /**
@@ -61,14 +60,16 @@ public class World implements Serializable
     
     // Object
     
-    private File file;
+    private String name;
     private final ArrayList<Entity> entities = new ArrayList<>();
+    private final WorldType type;
     
-    private World(File worldFile)
+    private World(String worldName, WorldType type)
     {
         if(roothandler == null) roothandler = new RootWorldEventHandler();
         
-        this.file = worldFile;
+        this.name = worldName;
+        File file = new File("etc/worlds/" + name);
         if(!file.exists())
         {
             try
@@ -81,12 +82,38 @@ public class World implements Serializable
             }
         }
         
+        this.type = type;
+        
         generateWorld();
+    }
+    
+    private World afterLoad()
+    {
+        if(roothandler == null) roothandler = new RootWorldEventHandler();
+        return this;
     }
     
     private void generateWorld()
     {
         
+    }
+    
+    /**
+     * Gets the name of this World.
+     * @return Returns the name of this World.
+     */
+    public String getName()
+    {
+        return name;
+    }
+    
+    /**
+     * Gets the type of World this is, as defined by {@link wrath.common.world.WorldType}.
+     * @return Returns the type of World.
+     */
+    public WorldType getWorldType()
+    {
+        return type;
     }
     
     /**
@@ -100,7 +127,7 @@ public class World implements Serializable
         
         try
         {
-            out = new ObjectOutputStream((gout = new GZIPOutputStream((fos = new FileOutputStream(file)))));
+            out = new ObjectOutputStream((gout = new GZIPOutputStream((fos = new FileOutputStream(new File("etc/worlds/" + name))))));
             out.writeObject(this);
             gout.finish();
             out.flush();
@@ -132,14 +159,16 @@ public class World implements Serializable
     //Static Methods
     
     /**
-     * Reads and returns all World data from the specified {java.io.File}.
+     * Reads and returns all World data from the specified World.
      * Returns null if corrupt/invalid.
-     * @param file The file to read world data from.
-     * @return Returns {@link wrath.common.world.World} from the specified {java.io.File}, null if invalid or corrupt.
+     * @param name The name of the world.
+     * @param type The type of World to generate if one is not loaded from a file. This can be null if you know the World already exists.
+     * @return Returns {@link wrath.common.world.World} loaded from a file (if present), null if invalid or corrupt.
      */
-    public static World loadWorld(File file)
+    public static World loadWorld(String name, WorldType type)
     {
-        if(!file.exists()) return new World(file);
+        File file = new File("etc/worlds/" + name);
+        if(!file.exists()) return new World(name, type).afterLoad();
         
         World ret = null;
         FileInputStream fis = null;
@@ -173,6 +202,8 @@ public class World implements Serializable
         {
             Logger.getErrorLogger().log("Could not close World streams! I/O Error!");
         }
+        
+        if(ret != null) ret.afterLoad();
         return ret;
     }
     
