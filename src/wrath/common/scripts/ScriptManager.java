@@ -28,8 +28,8 @@ import wrath.util.Logger;
  */
 public abstract class ScriptManager
 {
-    public static final Logger SCRIPT_LOGGER = new Logger("scripts");
-    public static final Config SCRIPT_CONFIG = new Config("scriping");
+    public static final Logger SCRIPT_LOGGER = new Logger(new File("etc/logs/scripting.log"));
+    public static final Config SCRIPT_CONFIG = new Config(new File("etc/configs/scriping.cfg"));
     private static final ArrayList<ScriptManager> mgrList = new ArrayList<>();
     private static final ArrayList<ScriptEventHandler> handlers = new ArrayList<>();
     private static RootScriptEventHandler rootHandler;
@@ -163,7 +163,7 @@ public abstract class ScriptManager
     {
         if(!directory.exists() || !directory.isDirectory())
         {
-            getScriptLogger().log("Could not load scripts from directory '" + directory.getAbsolutePath() + "', directory does not exist!");
+            getScriptLogger().println("Could not load scripts from directory '" + directory.getAbsolutePath() + "', directory does not exist!");
             return null;
         }
         

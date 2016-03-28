@@ -26,7 +26,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import wrath.util.Logger;
 
 /**
  * This class is made to easily add new Java files into the current environment.
@@ -35,17 +34,8 @@ import wrath.util.Logger;
 public class JarLoader
 {
     private static final JarLoader inst = new JarLoader();
-    public static final Logger JAVA_LDR_LOGGER = new Logger("jarloader");
     
     private JarLoader(){}
-    
-    /**
-     * Closes the standard java-loader java and saves the standard java-loader config.
-     */
-    public static void closeJavaPlugins()
-    {
-        JAVA_LDR_LOGGER.close();
-    }
     
     /**
      * Loads a {@link java.lang.Class} instance that represents a class located in the specified Jar file.
@@ -64,11 +54,11 @@ public class JarLoader
         }
         catch(ClassNotFoundException e)
         {
-            JAVA_LDR_LOGGER.log("Could not read class '" + classPath+ "' from Jar file '" + jarFile.getAbsolutePath() + "'!");
+            System.err.println("Could not read class '" + classPath+ "' from Jar file '" + jarFile.getAbsolutePath() + "'!");
         }
         catch(MalformedURLException ex) 
         {
-            JAVA_LDR_LOGGER.log("Could not read Jar file '" + jarFile.getAbsolutePath() + "'!");
+            System.err.println("Could not read Jar file '" + jarFile.getAbsolutePath() + "'!");
         }
         return ret;
     }
@@ -82,7 +72,7 @@ public class JarLoader
     {
         if(!pluginsDir.exists() || !pluginsDir.isDirectory())
         {
-            JAVA_LDR_LOGGER.log("Could not load jars from directory '" + pluginsDir.getAbsolutePath() + "', directory does not exist!");
+            System.err.println("Could not load jars from directory '" + pluginsDir.getAbsolutePath() + "', directory does not exist!");
             return new Object[0];
         }
         
@@ -101,7 +91,7 @@ public class JarLoader
                 }
                 catch(IOException e)
                 {
-                    JAVA_LDR_LOGGER.log("Could not load jar '" + f.getAbsolutePath() + "'! I/O Error!");
+                    System.err.println("Could not load jar '" + f.getAbsolutePath() + "'! I/O Error!");
                 }
             }
         
@@ -125,11 +115,11 @@ public class JarLoader
         }
         catch(MalformedURLException e)
         {
-            JAVA_LDR_LOGGER.log("Could not load jar plugin '" + jarFile.getName() + "'! File 'init' was not found!");
+            System.err.println("Could not load jar plugin '" + jarFile.getName() + "'! File 'init' was not found!");
         }
         catch(IOException e)
         {
-            JAVA_LDR_LOGGER.log("Could not load jar plugin '" + jarFile.getName() + "'! I/O Error!");
+            System.err.println("Could not load jar plugin '" + jarFile.getName() + "'! I/O Error!");
         }
         
         return null;
@@ -152,7 +142,7 @@ public class JarLoader
         }
         catch(NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | InvocationTargetException e)
         {
-            JAVA_LDR_LOGGER.log("Could not read class '" + classPath+ "' from Jar file '" + jarFile.getAbsolutePath() + "'!\n"
+            System.err.println("Could not read class '" + classPath+ "' from Jar file '" + jarFile.getAbsolutePath() + "'!\n"
                     + "    No public, empty constructor present!");
         }
         return ret;

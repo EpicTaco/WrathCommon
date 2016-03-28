@@ -82,7 +82,7 @@ public class PythonScriptManager extends ScriptManager
         }
         catch (IOException e) 
         {
-            Logger.getErrorLogger().log("Could not compile script '" + script.getScriptName() + "'! I/O Error!");
+            System.err.println("Could not compile script '" + script.getScriptName() + "'! I/O Error!");
         }
         
         String fin = "";

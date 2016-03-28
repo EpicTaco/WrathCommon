@@ -49,7 +49,7 @@ public class Script implements Reloadable
     public void compile()
     {
         if(compiled) return;
-        man.getScriptLogger().log("Compiling script '" + getScriptName() + "'!");
+        ScriptManager.getScriptLogger().println("Compiling script '" + getScriptName() + "'!");
         compiledObject = man.compileScript(this);
         man.getScriptEventHandler().onScriptCompile(man, this);
         compiled = true;
@@ -71,7 +71,7 @@ public class Script implements Reloadable
     {
         if(compiled) compile();
         
-        ScriptManager.getScriptLogger().log("Executing script '" + getScriptName() + "'!");
+        ScriptManager.getScriptLogger().println("Executing script '" + getScriptName() + "'!");
         man.executeObject(compiledObject, dedicatedThread);
         man.getScriptEventHandler().onScriptExecute(man, this);
     }

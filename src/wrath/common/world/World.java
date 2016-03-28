@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import wrath.common.entities.Entity;
-import wrath.util.Logger;
 
 /**
  * Class to track Worlds and a convenient class to carry/save data.
@@ -78,7 +77,7 @@ public class World implements Serializable
             }
             catch(IOException e)
             {
-                Logger.getErrorLogger().log("Could not create new file @ '" + file.getAbsolutePath() + "'! I/O Error!");
+                System.err.println("Could not create new file @ '" + file.getAbsolutePath() + "'! I/O Error!");
             }
         }
         
@@ -134,12 +133,12 @@ public class World implements Serializable
         }
         catch(IOException e)
         {
-            Logger.getErrorLogger().log("Could not save World! I/O Error!");
+            System.err.println("Could not save World! I/O Error!");
         }
         
         if(out == null || fos == null || gout == null)
         {
-            Logger.getErrorLogger().log("Could not save World! Streams can not bind!");
+            System.err.println("Could not save World! Streams can not bind!");
             return;
         }
         
@@ -151,7 +150,7 @@ public class World implements Serializable
         }
         catch(IOException e)
         {
-            Logger.getErrorLogger().log("Could not close World streams! I/O Error!");
+            System.err.println("Could not close World streams! I/O Error!");
         }
     }
     
@@ -183,12 +182,12 @@ public class World implements Serializable
         }
         catch(IOException | ClassNotFoundException e)
         {
-            Logger.getErrorLogger().log("Could not load World! I/O Error!");
+            System.err.println("Could not load World! I/O Error!");
         }
         
         if(in == null || fis == null || is == null)
         {
-            Logger.getErrorLogger().log("Could not load World! Streams could not bind!");
+            System.err.println("Could not load World! Streams could not bind!");
             return ret;
         }
         
@@ -200,7 +199,7 @@ public class World implements Serializable
         }
         catch(IOException e)
         {
-            Logger.getErrorLogger().log("Could not close World streams! I/O Error!");
+            System.err.println("Could not close World streams! I/O Error!");
         }
         
         if(ret != null) ret.afterLoad();

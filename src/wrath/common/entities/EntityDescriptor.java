@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
-import wrath.util.Logger;
 
 /**
  * Class to read Entity Data from the 'assets/entities' directory.
@@ -148,7 +147,7 @@ public class EntityDescriptor implements Serializable
         }
         catch(IOException e)
         {
-            Logger.getErrorLogger().log("Could not read Entity Descriptor File, I/O Error!");
+            System.err.println("Could not read Entity Descriptor File, I/O Error!");
         }
         
         return r;
